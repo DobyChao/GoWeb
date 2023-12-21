@@ -1,21 +1,24 @@
 package main
 
 import (
-	"fmt"
 	"goo"
 	"net/http"
 )
 
 func main() {
 	r := goo.New()
-	r.GET("/", func(w http.ResponseWriter, req *http.Request) {
-		fmt.Fprintf(w, "URL.Path = %q\n", req.URL.Path)
+	r.GET("/", func(c *goo.Context) {
+		c.HTML(http.StatusOK, "<h1>Hello Goo</h1>")
+	})
+	r.GET("/hello", func(c *goo.Context) {
+		c.String(http.StatusOK, "hello %s, you're at %s\n", c.Query("name"), c.Path)
 	})
 
-	r.GET("/hello", func(w http.ResponseWriter, req *http.Request) {
-		for k, v := range req.Header {
-			fmt.Fprintf(w, "Header[%q] = %q\n", k, v)
-		}
+	r.POST("/login", func(c *goo.Context) {
+		c.JSON(http.StatusOK, goo.H{
+			"username": c.PostForm("username"),
+			"password": c.PostForm("password"),
+		})
 	})
 
 	r.Run(":9999")
