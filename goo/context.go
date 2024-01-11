@@ -16,6 +16,7 @@ type Context struct {
 	// request info
 	Path   string
 	Method string
+	Params map[string]string
 	// response info
 	StatusCode int
 }
@@ -38,6 +39,12 @@ func (c *Context) PostForm(key string) string {
 // Query is the method of Context to get query string
 func (c *Context) Query(key string) string {
 	return c.Req.URL.Query().Get(key)
+}
+
+// Param is the method of Context to get router param
+func (c *Context) Param(key string) string {
+	value := c.Params[key]
+	return value
 }
 
 // Status is the method of Context to write status code
