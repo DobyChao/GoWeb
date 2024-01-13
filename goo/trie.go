@@ -6,10 +6,10 @@ import (
 )
 
 type node struct {
-	pattern string // 待匹配路由，例如 /p/:lang
-	part string // 路由中的一部分，例如 :lang
+	pattern  string  // 待匹配路由，例如 /p/:lang
+	part     string  // 路由中的一部分，例如 :lang
 	children []*node // 子节点，例如 [doc, tutorial, intro]
-	isWild bool // part 含有 : 或 * 时为true
+	isWild   bool    // part 含有 : 或 * 时为true
 }
 
 func (n *node) matchChild(part string, isWild bool) *node {
@@ -38,7 +38,7 @@ func (n *node) matchChildren(part string) []*node {
 	return nodes
 }
 
-func (n *node) String() string  {
+func (n *node) String() string {
 	return n.pattern
 }
 
@@ -68,7 +68,7 @@ func (n *node) insert(pattern string, parts []string, height int) {
 	child.insert(pattern, parts, height+1)
 }
 
-func (n *node) search(parts []string, height int) *node  {
+func (n *node) search(parts []string, height int) *node {
 	if len(parts) == height || strings.HasPrefix(n.part, "*") {
 		if n.pattern == "" {
 			return nil
@@ -77,7 +77,7 @@ func (n *node) search(parts []string, height int) *node  {
 	}
 	part := parts[height]
 	children := n.matchChildren(part)
-	for _, child := range children{
+	for _, child := range children {
 		result := child.search(parts, height+1)
 		if result != nil {
 			return result

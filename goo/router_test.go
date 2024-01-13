@@ -22,12 +22,12 @@ func TestAddRoute(t *testing.T) {
 		defer func() {
 			if err := recover(); err != nil {
 				fmt.Println(err)
-				if (!panicOK) {
+				if !panicOK {
 					t.Fatal("the router panic")
 				}
 				return
-			} 
-			if (panicOK) {
+			}
+			if panicOK {
 				t.Fatal("the router should panic")
 			}
 		}()
@@ -59,7 +59,7 @@ func TestGetRoute(t *testing.T) {
 		t.Fatal("name should be equal to 'goo'")
 	}
 	fmt.Printf("matched path: %s, params['name']: %s\n", n.pattern, ps["name"])
-	
+
 	n, ps = r.getRoute("GET", "/assets/file1.txt")
 	if n == nil {
 		t.Fatal("nil shouldn't be returned")
