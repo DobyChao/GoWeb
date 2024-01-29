@@ -19,6 +19,9 @@ type Context struct {
 	Params map[string]string
 	// response info
 	StatusCode int
+	// middleware
+	handlers []HandlerFunc
+	index    int
 }
 
 // newContext is the constructor of Context
@@ -28,7 +31,22 @@ func newContext(w http.ResponseWriter, req *http.Request) *Context {
 		Req:    req,
 		Path:   req.URL.Path,
 		Method: req.Method,
+		index:  -1,
 	}
+}
+
+// Next is the method of Context to execute the next middleware
+func (c *Context) Next() {
+	c.index++
+	for ; c.index < len(c.handlers); c.index++ {
+		c.handlers[c.index](c)
+	}
+}
+
+// Fail is the method of Context to execute the last middleware
+func (c *Context) Fail(code int, err string) {
+	c.index = len(c.handlers)
+	c.JSON(code, H{"message": err})
 }
 
 // PostForm is the method of Context to get POST form

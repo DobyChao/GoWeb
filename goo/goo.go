@@ -3,6 +3,7 @@ package goo
 import (
 	"log"
 	"net/http"
+	"strings"
 )
 
 // HandlerFunc defines the request handler used by goo
@@ -63,8 +64,20 @@ func (engine *Engine) Run(addr string) (err error) {
 	return http.ListenAndServe(addr, engine)
 }
 
+// Use defines the method to add middleware
+func (group *RouterGroup) Use(middlewares ...HandlerFunc) {
+	group.middlewares = append(group.middlewares, middlewares...)
+}
+
 // ServeHTTP defines the method to implement the interface of ServeHTTP
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	var middlewares []HandlerFunc
+	for _, group := range engine.groups {
+		if strings.HasPrefix(req.URL.Path, group.prefix) {
+			middlewares = append(middlewares, group.middlewares...)
+		}
+	}
 	c := newContext(w, req)
+	c.handlers = middlewares
 	engine.router.handle(c)
 }
